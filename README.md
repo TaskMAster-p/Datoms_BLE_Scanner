@@ -798,7 +798,7 @@ After flashing the firmware onto the ESP32 and powering the supported BLE sensor
 
 # 🚀 Docker Setup & Compilation Instructions
 
-This project runs entirely inside an isolated **Docker container** using a standardized development environment image (`env-esp-idf`).
+This project runs entirely inside an isolated **Docker container** using a standardized development environment image (`espressif/idf`).
 
 By using Docker, the ESP-IDF toolchain, Python dependencies and build environment remain isolated from the host operating system, ensuring a consistent development workflow across different machines.
 
