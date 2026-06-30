@@ -812,57 +812,70 @@ https://www.docker.com/products/docker-desktop/
 
 ---
 
-## 2. Set the Target Device
+
+## 2. Pull the latest image
+
+Open a terminal inside the project directory.
+
+
+```bash
+docker pull espressif/idf:release-v5.4
+```
+
+
+## 3. Set the Target Device
 
 Open a terminal inside the project directory.
 
 Configure the target device.
 
 ```bash
-docker run --rm -v $PWD:/project -w /project env-esp-idf idf.py set-target esp32
+docker run --rm -v "${PWD}:/project" -w /project espressif/idf:release-v5.4 idf.py set-target esp32
 ```
 
 ---
 
-## 3. Build the Project
+## 4. Build the Project
 
 Compile the application.
 
 ```bash
-docker run --rm -v $PWD:/project -w /project env-esp-idf idf.py build
+docker run --rm -v "${PWD}:/project" -w /project espressif/idf:release-v5.4 idf.py build
 ```
 
 After a successful build, the firmware binaries are generated inside the `build/` directory.
 
 ---
 
-## 4. Flash the ESP32
+## 4. Install python libraries for flashing the device 
+
+
+```bash
+pip install esptool
+```
+```bash
+pip install pyserial
+```
+---
+
+## 5. Flash the ESP32
 
 Connect the ESP32 through USB and determine the serial port.
 
-Windows Example
-
-```text
-COM5
-```
-
-Linux Example
-
-```text
-/dev/ttyUSB0
-```
-
-Flash the firmware.
+Flash the firmware in other terminal outside container
 
 ```bash
-docker run --rm \
--v $PWD:/project \
--w /project \
-env-esp-idf \
-idf.py -p COM5 flash
+python -m esptool `
+--chip esp32 `
+--port COM3 `
+--baud 460800 `
+write_flash `
+0x1000 build\bootloader\bootloader.bin `
+0x8000 build\partition_table\partition-table.bin `
+0x10000 build\app.bin
 ```
 
-Replace **COM5** with the appropriate serial port.
+Replace **COM3** with the appropriate serial port.
 
 ---
 
@@ -871,12 +884,7 @@ Replace **COM5** with the appropriate serial port.
 To observe the decoded advertisement packets:
 
 ```bash
-docker run --rm \
--it \
--v $PWD:/project \
--w /project \
-env-esp-idf \
-idf.py -p COM5 monitor
+python -m serial.tools.miniterm COM3 115200
 ```
 
 Terminate the serial monitor using
@@ -887,33 +895,6 @@ Ctrl + ]
 
 ---
 
-## 6. Clean the Build
-
-Clean intermediate build files.
-
-```bash
-docker run --rm \
--v $PWD:/project \
--w /project \
-env-esp-idf \
-idf.py clean
-```
-
----
-
-## 7. Perform a Full Clean
-
-If build configuration issues occur, perform a complete clean.
-
-```bash
-docker run --rm \
--v $PWD:/project \
--w /project \
-env-esp-idf \
-idf.py fullclean
-```
-
----
 
 # Troubleshooting
 
